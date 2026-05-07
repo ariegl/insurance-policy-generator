@@ -1,3 +1,14 @@
 {
-    "packages": ["faker", "fpdf2"]
+    "packages": ["faker", "fpdf2"],
+    "fetch": [
+        {
+            "files": [
+                "./app/__init__.py",
+                "./app/schemas.py",
+                "./app/data_generator.py",
+                "./app/exporters.py",
+                "./app/main.py"
+            ]
+        }
+    ]
 }
