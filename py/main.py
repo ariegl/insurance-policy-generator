@@ -117,6 +117,10 @@ def on_generate(event) -> None:
     """Callback fired when the user clicks 'Generate'."""
     global _generated_policies
 
+    btn = document.querySelector("#generate-btn")
+    btn.disabled = True
+    btn.innerHTML = "Generating…"
+
     # Show processing indicator
     indicator = document.querySelector("#processing-indicator")
     indicator.classList.remove("hidden")
@@ -143,6 +147,8 @@ def on_generate(event) -> None:
         )
     finally:
         indicator.classList.add("hidden")
+        btn.disabled = False
+        btn.innerHTML = "Generate"
 
 # ---------------------------------------------------------------------------
 # Wire up DOM events on page load
