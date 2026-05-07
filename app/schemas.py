@@ -33,7 +33,7 @@ class MedicalInsurance(BaseSchema):
             "policy_id": "uuid4",
             "holder_name": "name",
             "holder_address": "address",
-            "blood_type": "blood_type",
+            "blood_type": "blood_group",
             "provider_network": "company",
             "deductible": ["pyint", {"min": 500, "max": 5000}],
         }

@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+import warnings
+
 from faker import Faker
 
 from app.schemas import get_schema
@@ -47,12 +49,20 @@ class PolicyGenerator:
             for field_name, field_def in fields.items():
                 if isinstance(field_def, str):
                     # Simple Faker method call (no arguments)
-                    value = getattr(fake, field_def)()
+                    try:
+                        value = getattr(fake, field_def)()
+                    except AttributeError:
+                        warnings.warn(f"Faker provider '{field_def}' not found, using 'N/A'")
+                        value = "N/A"
                 elif isinstance(field_def, (list, tuple)):
                     # First element is the method name, second (optional) is kwargs dict
                     method_name = field_def[0]
                     kwargs = field_def[1] if len(field_def) > 1 else {}
-                    value = getattr(fake, method_name)(**kwargs)
+                    try:
+                        value = getattr(fake, method_name)(**kwargs)
+                    except AttributeError:
+                        warnings.warn(f"Faker provider '{method_name}' not found, using 'N/A'")
+                        value = "N/A"
                 else:
                     value = None  # Fallback – should never happen with current schemas
                 policy[field_name] = value
