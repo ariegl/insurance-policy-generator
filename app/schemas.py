@@ -33,9 +33,9 @@ class MedicalInsurance(BaseSchema):
             "policy_id": "uuid4",
             "holder_name": "name",
             "holder_address": "address",
-            "blood_type": "blood_group",
+            "blood_type": ["random_element", {"elements": ["A+","A-","B+","B-","AB+","AB-","O+","O-"]}],
             "provider_network": "company",
-            "deductible": ["pyint", {"min": 500, "max": 5000}],
+            "deductible": ["pyint", {"min_value": 500, "max_value": 5000}],
         }
 
 
@@ -60,7 +60,7 @@ class LifeInsurance(BaseSchema):
             "policy_id": "uuid4",
             "holder_name": "name",
             "beneficiary_name": "name",
-            "coverage_amount": ["pyint", {"min": 50000, "max": 500000}],
+            "coverage_amount": ["pyint", {"min_value": 50000, "max_value": 500000}],
         }
 
 
@@ -72,7 +72,7 @@ class HomeInsurance(BaseSchema):
             "policy_id": "uuid4",
             "holder_name": "name",
             "property_address": "address",
-            "square_footage": ["pyint", {"min": 800, "max": 5000}],
+            "square_footage": ["pyint", {"min_value": 800, "max_value": 5000}],
         }
 
 

@@ -40,7 +40,7 @@ class PolicyGenerator:
             raise ValueError(f"Unknown policy type: {policy_type}")
 
         fields = schema.get_fields()
-        fake = Faker()
+        fake = Faker('en_US')
 
         policies: List[Dict[str, Any]] = []
 
@@ -51,8 +51,8 @@ class PolicyGenerator:
                     # Simple Faker method call (no arguments)
                     try:
                         value = getattr(fake, field_def)()
-                    except AttributeError:
-                        warnings.warn(f"Faker provider '{field_def}' not found, using 'N/A'")
+                    except (AttributeError, TypeError, ValueError) as exc:
+                        warnings.warn(f"Faker provider '{field_def}' raised {type(exc).__name__}, using 'N/A'")
                         value = "N/A"
                 elif isinstance(field_def, (list, tuple)):
                     # First element is the method name, second (optional) is kwargs dict
@@ -60,8 +60,8 @@ class PolicyGenerator:
                     kwargs = field_def[1] if len(field_def) > 1 else {}
                     try:
                         value = getattr(fake, method_name)(**kwargs)
-                    except AttributeError:
-                        warnings.warn(f"Faker provider '{method_name}' not found, using 'N/A'")
+                    except (AttributeError, TypeError, ValueError) as exc:
+                        warnings.warn(f"Faker provider '{method_name}' raised {type(exc).__name__}, using 'N/A'")
                         value = "N/A"
                 else:
                     value = None  # Fallback – should never happen with current schemas
