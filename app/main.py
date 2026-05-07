@@ -13,7 +13,7 @@ from pyodide.ffi import create_proxy
 from js import document, window, Uint8Array, Blob, URL
 
 from app.data_generator import PolicyGenerator
-from app.exporters import export_pdf, export_json, export_txt
+from app.exporters import export_pdf, export_json, export_txt, export_zip
 
 # ---------------------------------------------------------------------------
 # Global state
@@ -109,6 +109,14 @@ def download_txt(event) -> None:
     data = export_txt(_generated_policies)                # str
     _download_blob(data, "text/plain", "policies.txt")
 
+
+def download_zip(event) -> None:
+    """Handler for 'Download ZIP' button."""
+    if _generated_policies is None:
+        return
+    data = export_zip(_generated_policies)               # bytes
+    _download_blob(data, "application/zip", "policies.zip")
+
 # ---------------------------------------------------------------------------
 # Main generate button handler
 # ---------------------------------------------------------------------------
@@ -160,6 +168,7 @@ def _setup() -> None:
     document.querySelector("#download-pdf").addEventListener("click", create_proxy(download_pdf))
     document.querySelector("#download-json").addEventListener("click", create_proxy(download_json))
     document.querySelector("#download-txt").addEventListener("click", create_proxy(download_txt))
+    document.querySelector("#download-zip").addEventListener("click", create_proxy(download_zip))
 
 # Call setup now; PyScript ensures the DOM is ready before executing this code.
 _setup()

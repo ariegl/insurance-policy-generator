@@ -11,7 +11,9 @@ corresponding export representation:
 
 from __future__ import annotations
 
+import io
 import json
+import zipfile
 from typing import Any, Dict, List
 
 
@@ -54,6 +56,23 @@ def export_pdf(policies: List[Dict[str, Any]]) -> bytes:
 
     # Return raw bytes
     return pdf.output()
+
+
+def export_zip(policies: List[Dict[str, Any]]) -> bytes:
+    """Bundle each policy as an individual PDF file inside a ZIP archive.
+
+    The filename inside the archive follows the pattern ``Policy_<policy_id>.pdf``.
+    Returns the raw bytes of the ZIP file.
+    """
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for idx, policy in enumerate(policies):
+            # Generate a single‑policy PDF
+            single_pdf = export_pdf([policy])  # bytes
+            policy_id = policy.get("policy_id", f"{idx + 1}")
+            filename = f"Policy_{policy_id}.pdf"
+            zf.writestr(filename, single_pdf)
+    return buf.getvalue()
 
 
 def export_json(policies: List[Dict[str, Any]]) -> str:
