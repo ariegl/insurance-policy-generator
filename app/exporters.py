@@ -53,7 +53,7 @@ def export_pdf(policies: List[Dict[str, Any]]) -> bytes:
         pdf.ln(4)
 
     # Return raw bytes
-    return pdf.output(dest="S").encode("latin-1")
+    return pdf.output()
 
 
 def export_json(policies: List[Dict[str, Any]]) -> str:
