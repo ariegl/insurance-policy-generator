@@ -88,12 +88,16 @@ def _download_blob(data, mime_type: str, filename: str):
     document.body.removeChild(anchor)
     URL.revokeObjectURL(url)
 
-def download_pdf(event) -> None:
-    """Handler for 'Download PDF' button."""
+def download_policies(event) -> None:
+    """Handler for 'Download Policies (ZIP/PDF)' button."""
     if _generated_policies is None:
         return
-    data = export_pdf(_generated_policies)               # bytes
-    _download_blob(data, "application/pdf", "policies.pdf")
+    if len(_generated_policies) == 1:
+        data = export_pdf(_generated_policies)               # bytes
+        _download_blob(data, "application/pdf", "policy.pdf")
+    else:
+        data = export_zip(_generated_policies)               # bytes
+        _download_blob(data, "application/zip", "policies.zip")
 
 def download_json(event) -> None:
     """Handler for 'Download JSON' button."""
@@ -108,14 +112,6 @@ def download_txt(event) -> None:
         return
     data = export_txt(_generated_policies)                # str
     _download_blob(data, "text/plain", "policies.txt")
-
-
-def download_zip(event) -> None:
-    """Handler for 'Download ZIP' button."""
-    if _generated_policies is None:
-        return
-    data = export_zip(_generated_policies)               # bytes
-    _download_blob(data, "application/zip", "policies.zip")
 
 # ---------------------------------------------------------------------------
 # Main generate button handler
@@ -165,10 +161,9 @@ def on_generate(event) -> None:
 def _setup() -> None:
     """Attach event listeners to the interactive UI elements."""
     document.querySelector("#generate-btn").addEventListener("click", create_proxy(on_generate))
-    document.querySelector("#download-pdf").addEventListener("click", create_proxy(download_pdf))
+    document.querySelector("#download-policies").addEventListener("click", create_proxy(download_policies))
     document.querySelector("#download-json").addEventListener("click", create_proxy(download_json))
     document.querySelector("#download-txt").addEventListener("click", create_proxy(download_txt))
-    document.querySelector("#download-zip").addEventListener("click", create_proxy(download_zip))
 
 # Call setup now; PyScript ensures the DOM is ready before executing this code.
 _setup()

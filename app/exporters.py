@@ -18,7 +18,10 @@ from typing import Any, Dict, List
 
 
 def export_pdf(policies: List[Dict[str, Any]]) -> bytes:
-    """Render *policies* as a professional PDF page using fpdf2.
+    """Render *policies* as a professional PDF document.
+
+    Each policy appears on a new page with a formal letterhead,
+    a structured data table, legal boilerplate, and a signature line.
 
     Returns the raw PDF binary content that can be turned into a
     browser Blob and downloaded.
@@ -26,35 +29,73 @@ def export_pdf(policies: List[Dict[str, Any]]) -> bytes:
     from fpdf import FPDF  # delayed import keeps module lightweight
 
     pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
-    pdf.set_font("Helvetica", size=10)
 
     for idx, policy in enumerate(policies, start=1):
-        # Section header
+        # ---------- letterhead ----------
+        pdf.set_font("Helvetica", "B", 16)
+        pdf.cell(0, 10, "Agnostic Global Insurance Co.",
+                 new_x="LMARGIN", new_y="NEXT", align="C")
+        pdf.set_font("Helvetica", "", 8)
+        pdf.cell(0, 5, "Policy Certificate - Full Coverage",
+                 new_x="LMARGIN", new_y="NEXT", align="C")
+        pdf.ln(5)
+
+        # ---------- identification block ----------
         pdf.set_font("Helvetica", "B", 12)
-        pdf.cell(0, 8, f"Policy #{idx}", new_x="LMARGIN", new_y="NEXT", align="L")
-        pdf.set_font("Helvetica", size=10)
-
-        # Policy ID
-        pdf.cell(0, 6, f"Policy ID:        {policy.get('policy_id', '')}",
+        pdf.cell(0, 8, f"Policy ID:     {policy.get('policy_id','')}",
                  new_x="LMARGIN", new_y="NEXT")
-        # Holder Name
-        pdf.cell(0, 6, f"Holder Name:      {policy.get('holder_name', '')}",
+        pdf.set_font("Helvetica", "", 10)
+        pdf.cell(0, 7, f"Holder Name:   {policy.get('holder_name','')}",
                  new_x="LMARGIN", new_y="NEXT")
-
-        # Remaining fields printed in the same style
-        for field, value in policy.items():
-            if field in ("policy_id", "holder_name"):
-                continue  # already shown above
-            # Format the field label
-            label = field.replace("_", " ").title()
-            pdf.cell(0, 6, f"{label}: {value}",
-                     new_x="LMARGIN", new_y="NEXT")
-
-        # Blank separator between policies
         pdf.ln(4)
 
-    # Return raw bytes
+        # ---------- data table ----------
+        pdf.set_font("Helvetica", "B", 12)
+        pdf.cell(0, 8, "Coverage Details", new_x="LMARGIN", new_y="NEXT")
+        pdf.set_font("Helvetica", "", 10)
+
+        col1 = 70     # label column width
+        col2 = pdf.epw - col1  # value column width
+
+        for field, value in policy.items():
+            if field in ("policy_id", "holder_name"):
+                continue
+            label = field.replace("_", " ").title()
+            pdf.cell(col1, 7, label, border=1, align="L")
+            pdf.cell(col2, 7, str(value), border=1, align="L")
+            pdf.ln(7)
+
+        pdf.ln(5)
+
+        # ---------- legal boilerplate ----------
+        pdf.set_font("Helvetica", "I", 8)
+        boilerplate = (
+            "This certificate is issued subject to the terms and conditions "
+            "contained in the Policy Contract. Please read the policy document "
+            "carefully to understand the scope of coverage, exclusions, and "
+            "obligations. This document does not constitute an insurance contract "
+            "unless accompanied by the complete policy wording."
+        )
+        pdf.multi_cell(0, 5, boilerplate, align="L")
+        pdf.ln(4)
+
+        # ---------- signature block ----------
+        pdf.set_font("Helvetica", "", 10)
+        pdf.cell(0, 7,
+                 "Authorized Representative Signature: _________________________",
+                 new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(2)
+        pdf.set_font("Helvetica", "I", 8)
+        pdf.cell(0, 5, "Date of Issue: ___________   Policy Period: ___________",
+                 new_x="LMARGIN", new_y="NEXT")
+        pdf.ln(8)
+
+        # start a new page for the next policy unless it's the last one
+        if idx < len(policies):
+            pdf.add_page()
+
     return pdf.output()
 
 

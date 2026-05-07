@@ -36,6 +36,11 @@ class MedicalInsurance(BaseSchema):
             "blood_type": ["random_element", {"elements": ["A+","A-","B+","B-","AB+","AB-","O+","O-"]}],
             "provider_network": "company",
             "deductible": ["pyint", {"min_value": 500, "max_value": 5000}],
+            "premium_amount": ["pyint", {"min_value": 200, "max_value": 2000}],
+            "tax_percentage": ["pyint", {"min_value": 0, "max_value": 20}],
+            "total_cost": ["pyint", {"min_value": 200, "max_value": 4000}],
+            "copay_details": ["sentence", {"nb_words": 5}],
+            "emergency_contact": "phone_number",
         }
 
 
@@ -49,6 +54,11 @@ class AutoInsurance(BaseSchema):
             "vin": "vin",
             "license_plate": "license_plate",
             "vehicle_model": "vehicle_model",
+            "premium_amount": ["pyint", {"min_value": 200, "max_value": 2000}],
+            "tax_percentage": ["pyint", {"min_value": 0, "max_value": 20}],
+            "total_cost": ["pyint", {"min_value": 200, "max_value": 4000}],
+            "policy_limit": ["pyint", {"min_value": 5000, "max_value": 100000}],
+            "coverage_type": ["random_element", {"elements": ["Comprehensive","Liability","Collision"]}],
         }
 
 
@@ -61,6 +71,9 @@ class LifeInsurance(BaseSchema):
             "holder_name": "name",
             "beneficiary_name": "name",
             "coverage_amount": ["pyint", {"min_value": 50000, "max_value": 500000}],
+            "premium_amount": ["pyint", {"min_value": 200, "max_value": 2000}],
+            "tax_percentage": ["pyint", {"min_value": 0, "max_value": 20}],
+            "total_cost": ["pyint", {"min_value": 200, "max_value": 4000}],
         }
 
 
@@ -73,6 +86,11 @@ class HomeInsurance(BaseSchema):
             "holder_name": "name",
             "property_address": "address",
             "square_footage": ["pyint", {"min_value": 800, "max_value": 5000}],
+            "premium_amount": ["pyint", {"min_value": 200, "max_value": 2000}],
+            "tax_percentage": ["pyint", {"min_value": 0, "max_value": 20}],
+            "total_cost": ["pyint", {"min_value": 200, "max_value": 4000}],
+            "dwelling_coverage": ["pyint", {"min_value": 50000, "max_value": 500000}],
+            "year_built": ["pyint", {"min_value": 1900, "max_value": 2023}],
         }
 
 
